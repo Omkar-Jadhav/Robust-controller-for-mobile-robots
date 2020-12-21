@@ -10,9 +10,15 @@ phiL_dot=S(4);
 phiR_des=S(5);
 phiL_des=S(6);
 
-phiR_des_d= vr+wr*L;
-phiL_des_d= vr-wr*L;
+phiR_des_d= (vr+wr*L)/R;
+phiL_des_d= (vr-wr*L)/R;
 
+% phiR_des_dd=vr;
+% phiL_des_dd=vr;
+% 
+% phi_des_dd=[phiR_des_d;...
+%             phiL_des_d];
+        
 e=[phiR_des-phiR;...
     phiL_des-phiL];
 

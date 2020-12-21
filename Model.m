@@ -51,13 +51,15 @@ del_v2=cell2mat(del_v2);
 phiR_dot=S(:,3);
 phiL_dot=S(:,4);
 
-v=(phiR_dot+phiL_dot)/2;
-w=(phiR_dot-phiL_dot)/(2*L);
+v=(phiR_dot+phiL_dot)*R/2;
+w=(phiR_dot-phiL_dot)*R/(2*L);
 
 figure;
 subplot(1,2,1)
 plot(t,v,'Linewidth',2);
 hold on
+plot(t,t,'--','Linewidth',2)
+hold off
 title('$V$','Interpreter','Latex')
 xlim([0,10])
 grid on
