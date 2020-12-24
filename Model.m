@@ -21,15 +21,13 @@ Ic=0.732;
 I=Ic+mc*b^2+2*mw*L^2+2*Im;   %MI of robot wrt centre point A.
 
 m=mc+2*mw;
-Meq=m+(2*Iwy/R^2);
-Jeq=(I+2*Iwy*L^2/R^2);
 
 %% Solver
 timespan=0:0.01:10;
 IC=[0;0;0;0;0;0];
 
 vr=1;
-wr=0;
+wr=1;
 
 wn=2;
 Kp=diag([wn^2,wn^2]);
@@ -48,18 +46,15 @@ Kd=diag([2*wn,2*wn]);
 del_v1=cell2mat(del_v1);
 del_v2=cell2mat(del_v2);
 %% Plots
-phiR_dot=S(:,3);
-phiL_dot=S(:,4);
+rhoR_dot=S(:,3);
+rhoL_dot=S(:,4);
 
-v=(phiR_dot+phiL_dot)*R/2;
-w=(phiR_dot-phiL_dot)*R/(2*L);
+v=(rhoR_dot+rhoL_dot)/2;
+w=(rhoR_dot-rhoL_dot)/(2*L);
 
 figure;
 subplot(1,2,1)
 plot(t,v,'Linewidth',2);
-hold on
-plot(t,t,'--','Linewidth',2)
-hold off
 title('$V$','Interpreter','Latex')
 xlim([0,10])
 grid on
@@ -73,11 +68,11 @@ grid on
 figure;
 subplot(1,2,1)
 plot(t,del_v1,'Linewidth',2)
-title('$\delta v_1$','Interpreter','Latex')
+title('$\Delta v_1$','Interpreter','Latex')
 grid on
 box on
 subplot(1,2,2)
 plot(t,del_v2,'Linewidth',2)
 grid on 
 box on
-title('$\delta v_2$','Interpreter','Latex')
+title('$\Delta v_2$','Interpreter','Latex')

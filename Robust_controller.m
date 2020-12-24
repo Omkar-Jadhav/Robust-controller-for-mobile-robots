@@ -3,15 +3,15 @@ function [Sdot del_v1 del_v2]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
 %ROBUST_CONTROLLER Summary of this function goes here
 %   Detailed explanation goes here
 
-phiR=S(1);
-phiL=S(2);
-phiR_dot=S(3);
-phiL_dot=S(4);
-phiR_des=S(5);
-phiL_des=S(6);
+rhoR=S(1);
+rhoL=S(2);
+rhoR_dot=S(3);
+rhoL_dot=S(4);
+rhoR_des=S(5);
+rhoL_des=S(6);
 
-phiR_des_d= (vr+wr*L)/R;
-phiL_des_d= (vr-wr*L)/R;
+phiR_des_d= (vr+wr*L);
+phiL_des_d= (vr-wr*L);
 
 % phiR_des_dd=vr;
 % phiL_des_dd=vr;
@@ -19,30 +19,30 @@ phiL_des_d= (vr-wr*L)/R;
 % phi_des_dd=[phiR_des_d;...
 %             phiL_des_d];
         
-e=[phiR_des-phiR;...
-    phiL_des-phiL];
+e=[rhoR_des-rhoR;...
+    rhoL_des-rhoL];
 
-edot=[phiR_des_d-phiR_dot;...
-        phiL_des_d-phiL_dot];
+edot=[phiR_des_d-rhoR_dot;...
+        phiL_des_d-rhoL_dot];
 
 
 E=[e;edot];
-phi_dot=[phiR_dot;phiL_dot];
+phi_dot=[rhoR_dot;rhoL_dot];
 
 V=Kp*e-Kd*phi_dot;
 
-w=(phiR_dot-phiL_dot)/(2*L);
+w=(rhoR_dot-rhoL_dot)/(2*L);
 
-C=[((R^2/(2*L)))*mc*b*w*phiL_dot;...
-    -((R^2/(2*L)))*mc*b*w*phiR_dot];
+C=R*[((1/(2*L)))*mc*b*w*rhoL_dot;...
+    -((1/(2*L)))*mc*b*w*rhoR_dot];
 
-M=[2*Iwy+(R^2/(4*L^2))*(m*L^2+I),(R^2/(4*L^2))*(m*L^2-I);...
-        (R^2/(4*L^2))*(m*L^2-I),2*Iwy+(R^2/(4*L^2))*(m*L^2+I)]; 
+M=R*[2*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
+        (1/(4*L^2))*(m*L^2-I),2*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
 
 C_cap=0.5*C;
 
-Mcap=[Iwy+(R^2/(4*L^2))*(m*L^2+I),(R^2/(4*L^2))*(m*L^2-I);...
-        (R^2/(4*L^2))*(m*L^2-I),Iwy+(R^2/(4*L^2))*(m*L^2+I)]; 
+Mcap=R*[Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
+        (1/(4*L^2))*(m*L^2-I),Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
 
 K=[Kp Kd];              %Gains  
 del_v=Del_v(M,Mcap,V,Iwy,R,m,L,I,K,C_cap,E);
@@ -56,6 +56,6 @@ phi_ddot=inv(M)*(u-C);
 phiR_ddot=phi_ddot(1);
 phiL_ddot=phi_ddot(2);
 
-Sdot=[phiR_dot ;phiL_dot ;phiR_ddot ;phiL_ddot ;phiR_des_d ;phiL_des_d];
+Sdot=[rhoR_dot ;rhoL_dot ;phiR_ddot ;phiL_ddot ;phiR_des_d ;phiL_des_d];
 end
 

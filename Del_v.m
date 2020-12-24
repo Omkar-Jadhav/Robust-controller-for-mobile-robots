@@ -9,8 +9,8 @@ alpha=norm(inv(M)*Mcap-eye(2,2));
 v_mag=norm(v);
 
 % Upper limit for || inv(M)|| ==> M_bar
-M_bar=[0.5*Iwy+(R^2/(4*L^2))*(m*L^2+I),(R^2/(4*L^2))*(m*L^2-I);...
-        (R^2/(4*L^2))*(m*L^2-I),0.5*Iwy+(R^2/(4*L^2))*(m*L^2+I)]; 
+M_bar=R*[0.5*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
+        (1/(4*L^2))*(m*L^2-I),0.5*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
 
 M_bar=norm(M_bar);
 
