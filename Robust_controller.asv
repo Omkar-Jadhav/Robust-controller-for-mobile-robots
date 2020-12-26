@@ -16,8 +16,11 @@ rhoL_des_d= vr-wr*L;
 e=[rhoR_des-rhoR;...
     rhoL_des-rhoL];
 
-edot=[-rhoR_dot;...
-      -rhoL_dot];
+% edot=[rhoR_des_d-rhoR_dot;...
+%       rhoL_des_d-rhoL_dot];
+
+edot=[rhoR_des_d-rhoR_dot;...
+      rhoL_des_d-rhoL_dot];
 
 E=[e;edot];
 rho_dot=[rhoR_dot;rhoL_dot];
@@ -43,6 +46,7 @@ del_v1=del_v(1);
 del_v2=del_v(2);
 
 u= (Mcap*(V+del_v)+C_cap);
+% u= (Mcap*(V)+C_cap);
 
 rho_ddot=inv(M)*(u-C);
 

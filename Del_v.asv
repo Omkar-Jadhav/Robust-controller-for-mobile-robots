@@ -16,7 +16,7 @@ M_bar=norm(M_bar);
 
 %Limit function for del_v and eta_bar
 %Upper bound for ||del_v|| & ||eta_bar||
-rhof=(1/(1-alpha))*(alpha*v_mag +M_bar*C_cap);
+rhof=(alpha/(1-alpha))* v_mag +(1/(1-alpha))*M_bar*C_cap; 
 
 B= [0,0;...
     0,0;...
@@ -29,17 +29,18 @@ A=[0,0,1,0;...
     0,0,0,0];       %System Matrix
 
 A_bar=A-B*K;        %Hertwitz
-P=lyap(A_bar,Q);
+P=linsolve((A_bar'+A_bar),-Q);
 
 w=B'*P*e;
 w_mag=norm(w);
 
-eps=0.001;       % To avoid chattering
-if(w_mag>=eps)
+eps=0.1;       % To avoid chattering
+if(w_mag>eps)
     del_v= -rhof.*w/w_mag;
 elseif(w_mag<eps)
     del_v=-rhof.*w/eps;
 end
+
 
 end
 
