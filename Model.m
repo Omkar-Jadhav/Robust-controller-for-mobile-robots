@@ -24,7 +24,7 @@ I=Ic+mc*b^2+2*mw*L^2+2*Im;   %MI of robot wrt centre point A.
 m=mc+2*mw;
 
 %% Solver
-timespan=0:0.01:10;
+timespan=0:0.01:5;
 IC=[0;0;0;0;0;0;0;0];
 
 vr=1;
