@@ -43,8 +43,8 @@ V=Kp*e+Kd*edot;      % Contoller input
 
 w=(rhoR_dot-rhoL_dot)/(2*L);    % Actual omega
 
-C=R*[((1/(2*L)))*mc*b*w*rhoL_dot;...
-    -((1/(2*L)))*mc*b*w*rhoR_dot];         % Actual C matrix
+C=R*[((R^2/(2*L)))*mc*b*w*rhoL_dot;...
+    -((R^2/(2*L)))*mc*b*w*rhoR_dot];         % Actual C matrix
 
 
 %%
@@ -55,6 +55,7 @@ C_cap=0.5*C;
 
 Mcap=R*[Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
         (1/(4*L^2))*(m*L^2-I),Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
+
 %% Updating I_tilde
 % I_tilde is the Iwy which accounts for the disturbance on the system.
 f=Give_friction(t,rhoR_dot,rhoL_dot,tR_dot,tL_dot,R,m);   %Friction on the wheels
@@ -71,8 +72,6 @@ if(abs(rhoR_ddot)<=1e-3)
 else
     I_tilde=Iwy*R*tR_ddot/rhoR_ddot;
 end
-I_tilde
-
 
 %% Control
 K=[Kp Kd];              %Gains  
