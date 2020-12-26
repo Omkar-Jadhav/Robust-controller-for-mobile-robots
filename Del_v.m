@@ -29,7 +29,7 @@ A=[0,0,1,0;...
     0,0,0,0];       %System Matrix
 
 A_bar=A-B*K;        %Hertwitz
-P=linsolve((A_bar'+A_bar),-Q);
+P=lyap(A_bar,Q);
 
 w=B'*P*e;
 w_mag=norm(w);
