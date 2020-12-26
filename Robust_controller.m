@@ -1,4 +1,4 @@
-function [Sdot del_v1 del_v2]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
+function [Sdot del_v1 del_v2 I_tilde Tr Tl]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
                 R,mc,m,I,b,Iwy)
 %ROBUST_CONTROLLER Summary of this function goes here
 %   Detailed explanation goes here
@@ -9,35 +9,44 @@ rhoR_dot=S(3);
 rhoL_dot=S(4);
 rhoR_des=S(5);
 rhoL_des=S(6);
+tR_dot=S(7);
+tL_dot=S(8);
 
-phiR_des_d= (vr+wr*L);
-phiL_des_d= (vr-wr*L);
+%% Desired wheel linear velocities
+rhoR_des_d= (vr+wr*L);
+rhoL_des_d= (vr-wr*L);
+%% Creating global variables 
+% This global variables will be used for calculation of I_tilde
+global u rhoR_ddot tR_ddot I_tilde
 
-% phiR_des_dd=vr;
-% phiL_des_dd=vr;
-% 
-% phi_des_dd=[phiR_des_d;...
-%             phiL_des_d];
-        
+if(t==0)
+    I_tilde=Iwy;
+    tR_ddot=0;
+    u=[0;0];
+    rhoR_ddot=0;
+end
+%% Error terms
 e=[rhoR_des-rhoR;...
     rhoL_des-rhoL];
 
-edot=[phiR_des_d-rhoR_dot;...
-        phiL_des_d-rhoL_dot];
+edot=[rhoR_des_d-rhoR_dot;...
+        rhoL_des_d-rhoL_dot];
 
 
 E=[e;edot];
-phi_dot=[rhoR_dot;rhoL_dot];
+rho_dot=[rhoR_dot;rhoL_dot];
 
-V=Kp*e-Kd*phi_dot;
+V=Kp*e-Kd*rho_dot;      % Contoller input
 
-w=(rhoR_dot-rhoL_dot)/(2*L);
+w=(rhoR_dot-rhoL_dot)/(2*L);    % Actual omega
 
 C=R*[((1/(2*L)))*mc*b*w*rhoL_dot;...
-    -((1/(2*L)))*mc*b*w*rhoR_dot];
+    -((1/(2*L)))*mc*b*w*rhoR_dot];         % Actual C matrix
 
-M=R*[2*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
-        (1/(4*L^2))*(m*L^2-I),2*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
+
+%%
+M=R*[I_tilde/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
+        (1/(4*L^2))*(m*L^2-I),I_tilde/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
 
 C_cap=0.5*C;
 
@@ -51,11 +60,28 @@ del_v2=del_v(2);
 
 u= (M*V+C);
 
-phi_ddot=inv(M)*(u-C);
+rho_ddot=inv(M)*(u-C);
 
-phiR_ddot=phi_ddot(1);
-phiL_ddot=phi_ddot(2);
+rhoR_ddot=rho_ddot(1);
+rhoL_ddot=rho_ddot(2);
+%% Updating I_tilde
+% I_tilde is the Iwy which accounts for the disturbance on the system.
+f=Give_friction(t,rhoR_dot,rhoL_dot,tR_dot,tL_dot,R,m);   %Friction on the wheels
 
-Sdot=[rhoR_dot ;rhoL_dot ;phiR_ddot ;phiL_ddot ;phiR_des_d ;phiL_des_d];
+flong_1=f(1);
+flong_2=f(2);
+Tr=u(1);    % Getting the torques on the wheel
+Tl=u(2);    % Getting the torques on the wheel
+
+tR_ddot=(Tr-flong_1*R)/Iwy;
+tL_ddot=(Tl-flong_2*R)/Iwy;
+
+if(abs(rhoR_ddot)<=1e-8)
+    I_tilde=Iwy;
+else
+    I_tilde=Iwy*R*tR_ddot/rhoR_ddot;
 end
 
+%% 
+Sdot=[rhoR_dot ;rhoL_dot ;rhoR_ddot ;rhoL_ddot ;rhoR_des_d ;rhoL_des_d;tR_ddot;tL_ddot];
+end
