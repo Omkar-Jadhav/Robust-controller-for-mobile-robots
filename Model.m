@@ -30,7 +30,7 @@ IC=[0;0;0;0;0;0;0;0];
 vr=1;
 wr=1;
 
-wn=3;
+wn=2;
 Kp=diag([wn^2,wn^2]);
 Kd=diag([2*wn,2*wn]);
 
@@ -83,6 +83,7 @@ title('$\Delta v_2$','Interpreter','Latex')
 
 figure;
 plot(t,I_tilde,'Linewidth',2)
+title('$\tilde{I}$','Interpreter','Latex')
 box on
 grid on
 

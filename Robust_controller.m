@@ -46,7 +46,24 @@ w=(rhoR_dot-rhoL_dot)/(2*L);    % Actual omega
 C=R*[((R^2/(2*L)))*mc*b*w*rhoL_dot;...
     -((R^2/(2*L)))*mc*b*w*rhoR_dot];         % Actual C matrix
 
+%% Updating I_tilde
+% I_tilde is the Iwy which accounts for the disturbance on the system.
+f=Give_friction(t,rhoR_dot,rhoL_dot,tR_dot,tL_dot,R,m);   %Friction on the wheels
+flong_1=f(1);
+flong_2=f(2);
 
+%%
+Tr=u(1);    % Getting the torques on the wheel
+Tl=u(2);    % Getting the torques on the wheel
+
+tR_ddot=(Tr-flong_1*R)/Iwy;
+tL_ddot=(Tl-flong_2*R)/Iwy;
+
+if(abs(rhoR_ddot)<=0.1)
+    I_tilde=Iwy;
+else
+    I_tilde=Iwy*R*tR_ddot/rhoR_ddot;
+end
 %%
 M=R*[I_tilde/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
         (1/(4*L^2))*(m*L^2-I),I_tilde/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
@@ -55,23 +72,6 @@ C_cap=0.5*C;
 
 Mcap=R*[Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
         (1/(4*L^2))*(m*L^2-I),Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
-
-%% Updating I_tilde
-% I_tilde is the Iwy which accounts for the disturbance on the system.
-f=Give_friction(t,rhoR_dot,rhoL_dot,tR_dot,tL_dot,R,m);   %Friction on the wheels
-flong_1=f(1);
-flong_2=f(2);
-Tr=u(1);    % Getting the torques on the wheel
-Tl=u(2);    % Getting the torques on the wheel
-
-tR_ddot=(Tr-flong_1*R)/Iwy;
-tL_ddot=(Tl-flong_2*R)/Iwy;
-
-if(abs(rhoR_ddot)<=1e-3)
-    I_tilde=Iwy;
-else
-    I_tilde=Iwy*R*tR_ddot/rhoR_ddot;
-end
 
 %% Control
 K=[Kp Kd];              %Gains  
@@ -85,7 +85,6 @@ rho_ddot=inv(M)*(u-C);
 
 rhoR_ddot=rho_ddot(1);
 rhoL_ddot=rho_ddot(2);
-
 %% 
 Sdot=[rhoR_dot ;rhoL_dot ;rhoR_ddot ;rhoL_ddot ;rhoR_des_d ;rhoL_des_d;tR_ddot;tL_ddot];
 end
