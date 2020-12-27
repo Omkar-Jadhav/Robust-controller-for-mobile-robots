@@ -24,15 +24,16 @@ I=Ic+mc*b^2+2*mw*L^2+2*Im;   %MI of robot wrt centre point A.
 m=mc+2*mw;
 
 %% Solver
-timespan=0:0.01:5;
+timespan=0:0.01:10;
 IC=[0;0;0;0;0;0;0;0];
 
 vr=1;
 wr=1;
 
-wn=2;
-Kp=diag([wn^2,wn^2]);
-Kd=diag([2*wn,2*wn]);
+wn=2;               %Natural frequency
+Kp=diag([wn^2,wn^2]);   
+Kd=diag([2*wn,2*wn]);   %Critically damped zeta=1
+
 
 % [t S]=ode45(@(t,S) Computed_torque(t,S,vr,wr,L,Kp,Kd,Iwy,R,...
 %                                     m,I,mc,b),timespan,IC);
@@ -42,13 +43,13 @@ Kd=diag([2*wn,2*wn]);
             
 [~,del_v1, del_v2, I_tilde Tr Tl]=cellfun(@(t,S) Robust_controller(t,S,vr,wr,L,Kp,Kd,...
                 R,mc,m,I,b,Iwy),num2cell(t),...
-                            num2cell(S,2),'uni',0);
+                            num2cell(S,2),'uni',0);     % Retriving terms for plotting
                         
-del_v1=cell2mat(del_v1);
-del_v2=cell2mat(del_v2);
-I_tilde=cell2mat(I_tilde);
-Tr=cell2mat(Tr);
-Tl=cell2mat(Tl);
+del_v1=cell2mat(del_v1);        %Converting to double form
+del_v2=cell2mat(del_v2);        %Converting to double form
+I_tilde=cell2mat(I_tilde);      %Converting to double form
+Tr=cell2mat(Tr);                %Converting to double form
+Tl=cell2mat(Tl);                %Converting to double form
 %% Plots
 rhoR_dot=S(:,3);
 rhoL_dot=S(:,4);
