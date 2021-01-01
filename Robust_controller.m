@@ -1,7 +1,8 @@
-function [Sdot del_v1 del_v2 I_tilde Tr Tl]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
+function [Sdot del_v1 del_v2 I_tilde Tr Tl tR_ddot rhoR_ddot]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
                 R,mc,m,I,b,Iwy)
 %ROBUST_CONTROLLER Summary of this function goes here
 %   Detailed explanation goes here
+
 rhoR=S(1);
 rhoL=S(2);
 rhoR_dot=S(3);
@@ -33,13 +34,12 @@ f=Give_friction(t,rhoR_dot,rhoL_dot,tR_dot,tL_dot,R,m);   %Friction on the wheel
 flong_1=f(1);
 flong_2=f(2);
 
-%%
 Tr=u(1);    % Getting the torques on the wheel
 Tl=u(2);    % Getting the torques on the wheel
 
 tR_ddot=(Tr-flong_1*R)/Iwy;
 tL_ddot=(Tl-flong_2*R)/Iwy;
-
+    
 if(abs(rhoR_ddot)<=0.1)         % To prevent overshooting of I_tilde when rho_ddot brcomes too small
     I_tilde=Iwy;
 else
@@ -73,7 +73,7 @@ E=[e;edot]; % Error terms
 V=Kp*e+Kd*edot;      % Contoller input
 
 K=[Kp Kd];              %Gains  
-del_v=Del_v(M,Mcap,V,Iwy,R,m,L,I,K,C_cap,E); % Calculate delta vterm
+del_v=Del_v(t,M,Mcap,V,Iwy,R,m,L,I,K,C_cap,E); % Calculate delta vterm
 del_v1=del_v(1);            %For plotting
 del_v2=del_v(2);            %For plotting
 

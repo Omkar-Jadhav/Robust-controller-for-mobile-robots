@@ -1,4 +1,4 @@
-function del_v = Del_v(M,Mcap,v,Iwy,R,m,L,I,K,C_cap,e)
+function del_v = Del_v(t,M,Mcap,v,Iwy,R,m,L,I,K,C_cap,e)
 %DEL_V Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -9,7 +9,7 @@ alpha=norm(inv(M)*Mcap-eye(2,2));
 v_mag=norm(v);
 
 % Upper limit for || inv(M)|| ==> M_bar
-M_bar=R*[0.5*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
+M_bar=R*[0.5.*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I),(1/(4*L^2))*(m*L^2-I);...
         (1/(4*L^2))*(m*L^2-I),0.5*Iwy/(R^2)+(1/(4*L^2))*(m*L^2+I)]; 
 
 M_bar=norm(M_bar);
@@ -34,9 +34,10 @@ P=lyap(A_bar,Q);
 w=B'*P*e;
 w_mag=norm(w);
 
-eps=0.01;       % To avoid chattering
+eps=0.001;       % To avoid chattering
 if(w_mag>eps)
     del_v= -rhof.*w/w_mag;
+
 elseif(w_mag<eps)
     del_v=-rhof.*w/eps;
 end
