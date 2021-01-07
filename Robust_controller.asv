@@ -1,4 +1,4 @@
-function [Sdot del_v1 del_v2 I_tilde Tr Tl tR_ddot rhoR_dot flong_1]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
+function [Sdot del_v1 del_v2 I_tilde Tr Tl tR_ddot rhoR_ddot tR_dot]= Robust_controller(t,S,vr,wr,L,Kp,Kd,...
                 R,mc,m,I,b,Iwy)
 %ROBUST_CONTROLLER Summary of this function goes here
 %   Detailed explanation goes here
@@ -47,23 +47,14 @@ else
     I_tilde=Iwy*R*tR_ddot/rhoR_ddot;
 end
 
-% if(I_tilde>=2*Iwy)
-%     I_tilde=2*Iwy;
-% elseif(I_tilde<=Iwy/2)
-%     I_tilde=Iwy/2;
-% end
-
-%% Filtering I_tilde value to avoid excessive oscillations
-% Using a sliding window filter
 a = 1;
 b = [1/4 1/4 1/4 1/4];
-
-I_tilde_vec=[I_tilde_vec,I_tilde]; % Updating I_tilde vec with new updated value
-I_tilde_vec=I_tilde_vec(end-3:end); %Taking the latest 4 values only
-
 y = filter(b,a,I_tilde_vec);
 
-I_tilde=y(end); %Using the latest filtered value
+I_tilde_vec=[I_tilde_vec,I_tilde];
+I_tilde_vec=I_tilde_vec(end-3:end);
+
+I_tilde=I_tilde_vec(end);
 %%
 w=(rhoR_dot-rhoL_dot)/(2*L);    % Actual omega
 
