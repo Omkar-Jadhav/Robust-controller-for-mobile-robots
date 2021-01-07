@@ -34,7 +34,7 @@ P=lyap(A_bar,Q);
 w=B'*P*e;
 w_mag=norm(w);
 
-eps=1e-5;       % To avoid chattering
+eps=0.01;       % To avoid chattering
 if(w_mag>eps)
     del_v= -rhof.*w/w_mag;
 
