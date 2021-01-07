@@ -17,7 +17,7 @@ rhoR_des_d= (vr+wr*L);
 rhoL_des_d= (vr-wr*L);
 %% Creating global variables 
 % This global variables will be used for calculation of I_tilde
-global u rhoR_ddot tR_ddot tL_ddot I_tilde Tr Tl I_tilde_vec
+global u rhoR_ddot tR_ddot tL_ddot I_tilde Tr Tl I_tilde_vec u_vec
 
 if(t==0)
     Tr=0;
@@ -26,8 +26,9 @@ if(t==0)
     tR_ddot=0;
     tL_ddot=0;
     u=[0;0];
+    u_vec=[0,0,0,0;0,0,0,0];
     rhoR_ddot=0;
-    I_tilde_vec=[Iwy Iwy Iwy Iwy ];
+    I_tilde_vec=[Iwy Iwy Iwy Iwy];
 end
 %% Updating I_tilde
 % I_tilde is the Iwy which accounts for the disturbance on the system.
@@ -41,29 +42,24 @@ Tl=u(2);    % Getting the torques on the wheel
 tR_ddot=(Tr-flong_1*R)/Iwy;
 tL_ddot=(Tl-flong_2*R)/Iwy;
     
-if(abs(rhoR_ddot)<=0.1)         % To prevent overshooting of I_tilde when rho_ddot brcomes too small
+if(abs(rhoR_ddot)<=0.0001)         % To prevent overshooting of I_tilde when rho_ddot brcomes too small
     I_tilde=Iwy;
 else
     I_tilde=Iwy*R*tR_ddot/rhoR_ddot;
 end
 
-% if(I_tilde>=2*Iwy)
-%     I_tilde=2*Iwy;
-% elseif(I_tilde<=Iwy/2)
-%     I_tilde=Iwy/2;
-% end
-
 %% Filtering I_tilde value to avoid excessive oscillations
 % Using a sliding window filter
-a = 1;
-b = [1/4 1/4 1/4 1/4];
-
-I_tilde_vec=[I_tilde_vec,I_tilde]; % Updating I_tilde vec with new updated value
-I_tilde_vec=I_tilde_vec(end-3:end); %Taking the latest 4 values only
-
-y = filter(b,a,I_tilde_vec);
-
-I_tilde=y(end); %Using the latest filtered value
+% a = 1;
+% b = [1/4 1/4 1/4 1/4];
+% 
+% I_tilde_vec=[I_tilde_vec,I_tilde]; % Updating I_tilde vec with new updated value
+% I_tilde_vec=I_tilde_vec(end-3:end); %Taking the latest 4 values only
+% 
+% y = filter(b,a,I_tilde_vec);
+% 
+% I_tilde=y(end); %Using the latest filtered value
+I_tilde=Use_filter(I_tilde_vec,I_tilde);
 %%
 w=(rhoR_dot-rhoL_dot)/(2*L);    % Actual omega
 
